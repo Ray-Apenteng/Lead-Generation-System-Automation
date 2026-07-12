@@ -1,0 +1,233 @@
+/* -------------------- RESET & BODY -------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(145deg, #f6f9fc 0%, #e9f2f9 100%);
+    padding: 20px;
+}
+
+/* -------------------- CARD CONTAINER -------------------- */
+.card {
+    background: white;
+    max-width: 520px;
+    width: 100%;
+    padding: 40px 36px;
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(0, 20, 40, 0.12);
+    transition: box-shadow 0.25s ease;
+}
+.card:hover {
+    box-shadow: 0 30px 70px rgba(0, 20, 40, 0.18);
+}
+
+/* -------------------- HEADER -------------------- */
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.header .icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 6px;
+}
+.header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0b1e33;
+    letter-spacing: -0.3px;
+}
+.header p {
+    color: #5b6f82;
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+/* -------------------- FORM FIELDS -------------------- */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e3347;
+    margin-bottom: 6px;
+}
+.form-group label span {
+    color: #c42e2e;
+    font-weight: 700;
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 1.5px solid #dde5ed;
+    border-radius: 16px;
+    background: #fafcfe;
+    transition: border 0.2s, box-shadow 0.2s;
+    outline: none;
+    color: #0b1e33;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #2a7de1;
+    box-shadow: 0 0 0 4px rgba(42, 125, 225, 0.12);
+    background: white;
+}
+.form-group textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* -------------------- BUTTON -------------------- */
+.btn-submit {
+    width: 100%;
+    padding: 14px 20px;
+    background: #1a73e8;
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+.btn-submit:hover {
+    background: #1558b0;
+}
+.btn-submit:active {
+    transform: scale(0.98);
+}
+.btn-submit:disabled {
+    background: #88b5f0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* -------------------- STATUS MESSAGE -------------------- */
+#responseMessage {
+    margin-top: 22px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 500;
+    display: none;
+    text-align: center;
+    border: 1px solid transparent;
+}
+#responseMessage.success {
+    display: block;
+    background: #e3f5eb;
+    border-color: #9ed7b7;
+    color: #0d633a;
+}
+#responseMessage.error {
+    display: block;
+    background: #fce9e9;
+    border-color: #f5bebe;
+    color: #a11f2b;
+}
+#responseMessage.info {
+    display: block;
+    background: #e5effa;
+    border-color: #b6d0e8;
+    color: #1d4f7a;
+}
+
+/* -------------------- FOOTER -------------------- */
+.footer-note {
+    margin-top: 24px;
+    font-size: 12px;
+    text-align: center;
+    color: #8da0b3;
+    border-top: 1px solid #eef4f9;
+    padding-top: 18px;
+}
+.footer-note code {
+    background: #f0f5fa;
+    padding: 3px 10px;
+    border-radius: 30px;
+    font-size: 13px;
+    color: #2a4b6e;
+    font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   NEW: TOP RIGHT LOGO
+   ============================================ */
+.card {
+    position: relative;  /* This allows the logo to sit exactly in the corner */
+    overflow: hidden;    /* Keeps the logo from poking outside the rounded corners */
+}
+
+.top-right-logo {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 10;
+}
+
+.top-right-logo img {
+    width: 48px;          /* Adjust this to fit your logo size */
+    height: 48px;
+    object-fit: contain;  /* Keeps the SVG proportions clean */
+    display: block;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.top-right-logo img:hover {
+    opacity: 1;
+}
+
+/* ============================================
+   NEW: BOTTOM RIGHT CREDIT
+   ============================================ */
+.footer-credit {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8da0b3;
+    margin-top: 16px;
+    padding-right: 2px;
+    letter-spacing: 0.2px;
+}
+
+.footer-credit::before {
+    content: "✧ ";   /* Small decorative star */
+    opacity: 0.6;
+}
+
+/* Update the existing footer-note to have a bit more top margin */
+.footer-note {
+    margin-top: 8px;   /* reduced from 24px because credit sits above */
+    padding-top: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: #8da0b3;
+    border-top: 1px solid #eef4f9;
+}
+
+.footer-note code {
+    background: #f0f5fa;
+    padding: 3px 10px;
+    border-radius: 30px;
+    font-size: 13px;
+    color: #2a4b6e;
+    font-family: 'Courier New', monospace;
+}

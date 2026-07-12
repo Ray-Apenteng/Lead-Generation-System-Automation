@@ -1,0 +1,62 @@
+# ============================================
+#  NODE.JS DEPENDENCIES
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================
+#  ENVIRONMENT VARIABLES (Secrets!)
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# ============================================
+#  SYSTEM FILES (Mac / Windows)
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
+#  EDITOR / IDE FILES
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vscode/settings.json
+
+# ============================================
+#  LOGS & TEMPORARY FILES
+# ============================================
+logs/
+*.log
+tmp/
+temp/
+
+# ============================================
+#  BUILDS / DIST (if you ever add a build step)
+# ============================================
+dist/
+build/
+*.bundle.js
+
+# ============================================
+#  n8n EXPORTS (Optional – include if you WANT to share workflow JSON)
+# ============================================
+# If you want to COMMIT your n8n workflow JSON, REMOVE the line below.
+# Otherwise, it will ignore any .json files inside an 'n8n' folder.
+# n8n/*.json
+
+# ============================================
+#  OS / MISCELLANEOUS
+# ============================================
+*.pem
+*.key
+*.cert

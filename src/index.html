@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🚀 Submit a Lead</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <div class="card">
+        
+        <!-- ===== NEW: TOP RIGHT LOGO CONTAINER ===== -->
+        <div class="top-right-logo">
+            <!-- Place your logo.svg in the SAME folder (src/) -->
+            <img src="logo.svg" alt="Raymond Owusu Apenteng Logo" />
+        </div>
+
+        <!-- HEADER -->
+        <div class="header">
+            <span class="icon">📬</span>
+            <h1>Send a Lead</h1>
+            <p>This goes straight to your Google Sheet</p>
+        </div>
+
+        <!-- FORM -->
+        <form id="leadForm">
+            <div class="form-group">
+                <label for="name">Full Name <span>*</span></label>
+                <input type="text" id="name" placeholder="e.g. Anna Kowalski" required />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span>*</span></label>
+                <input type="email" id="email" placeholder="anna@company.com" required />
+            </div>
+
+            <div class="form-group">
+                <label for="company">Company</label>
+                <input type="text" id="company" placeholder="Your startup name" />
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message / Interest</label>
+                <textarea id="message" placeholder="Tell us what you need..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                ✦  Send Lead  ✦
+            </button>
+        </form>
+
+        <!-- STATUS MESSAGE -->
+        <div id="responseMessage"></div>
+
+        <!-- ===== NEW: BOTTOM RIGHT CREDIT ===== -->
+        <div class="footer-credit">
+            code by Raymond Owusu Apenteng
+        </div>
+
+        <!-- OLD FOOTER (now moved up) -->
+        <div class="footer-note">
+            ⚡ Sends to: <code>Backend Proxy → n8n</code>
+        </div>
+
+    </div>
+
+    <!-- Link to the JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>
