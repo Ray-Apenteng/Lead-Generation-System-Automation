@@ -1,220 +1,271 @@
-Yes, absolutely! You can name your frontend folder **`src`**—that is a great name (it stands for "source"). In fact, it makes perfect sense because your frontend source code lives there.
-
-Since you already have a backend, we can use **Express to serve your `src` folder as static files**. This way, you don't need to double-click the HTML file or use Live Server. You simply visit `http://localhost:5000` in your browser, and your backend will serve the HTML page automatically—much cleaner!
-
----
-
-### 📁 Your New Folder Structure
-
-```
-lead-generation-system/
-│
-├── backend/                 # Your Express server
-│   ├── server.js            # (Updated to serve static files)
-│   └── node_modules/        # (Installed later)
-│
-├── src/                     # Your frontend (renamed from 'frontend')
-│   ├── index.html           # Your HTML structure
-│   ├── style.css            # Your styles
-│   └── script.js            # Your JavaScript logic
-│
-├── .env                     # Optional backend secrets
-├── package.json             # NEW (at the root level)
-├── package-lock.json        # (Auto-generated later)
-└── README.md                # NEW (updated documentation)
-```
-
----
-
-### 1️⃣ Updated Backend Code (`backend/server.js`)
-
-This version **serves your HTML** and handles the form submission. I added comments so you can see the new parts.
-
-```javascript
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const path = require('path'); // <-- NEW: Needed to serve files
-
-const app = express();
-
-// Enable CORS and JSON parsing
-app.use(cors());
-app.use(express.json());
-
-// ---------- NEW: Serve your frontend files ----------
-// This tells Express: "Look inside the 'src' folder for CSS, JS, and HTML files"
-app.use(express.static(path.join(__dirname, '..', 'src')));
-
-// ---------- Your existing backend endpoint ----------
-app.post('/submit-lead', async (req, res) => {
-    // CHANGED: 'username' to 'name' to match your HTML form!
-    const { name, email, company, message } = req.body;
-
-    // Basic validation
-    if (!name || !email) {
-        return res.status(400).json({ error: 'Name and Email are required.' });
-    }
-
-    console.log(`📝 Received lead from ${name} (${email})`);
-
-    // Send to n8n webhook
-    try {
-        const response = await axios.post(
-            'http://localhost:5678/webhook/submit-lead',
-            {
-                name,
-                email,
-                company,
-                message,
-            }
-        );
-
-        res.status(200).json({
-            message: 'Lead sent to n8n successfully! Check your Google Sheet.',
-            n8nStatus: response.status
-        });
-    } catch (error) {
-        console.error('❌ Error forwarding to n8n:', error.message);
-        res.status(500).json({
-            error: 'Failed to send to n8n. Is your n8n running and active?',
-            details: error.message
-        });
-    }
-});
-
-// ---------- NEW: Catch-all route to serve index.html ----------
-// If someone visits http://localhost:5000, send them the HTML page
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'src', 'index.html'));
-});
-
-// ---------- Start the server ----------
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Backend running on http://localhost:${PORT}`));
-```
-
----
-
-### 2️⃣ New `package.json` (Root Level)
-
-Create this file in the **root** of your project (next to the `backend/` and `src/` folders).
-
-```json
-{
-  "name": "lead-generation-system",
-  "version": "1.0.0",
-  "description": "A simple lead generation system with n8n, Google Sheets, and email notifications.",
-  "main": "backend/server.js",
-  "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js"
-  },
-  "keywords": [
-    "n8n",
-    "automation",
-    "leads",
-    "google-sheets",
-    "webhook"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {
-    "axios": "^1.6.0",
-    "cors": "^2.8.5",
-    "express": "^4.18.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  }
-}
-```
-
----
-
-### 3️⃣ New `README.md` (Root Level)
-
-Create this file in the **root** of your project.
-
-```markdown
 # 📬 Lead Generation System
 
-A simple lead generation system where users submit their details via a form → data is stored in Google Sheets → an automated email notification is sent for each submission.
+A fully functional lead generation system where users submit their details via a web form → data is automatically sent to Google Sheets → an email notification is triggered for each submission. Deployed with **Vercel** for the frontend/backend and **n8n** (self-hosted) for workflow automation.
+
+---
 
 ## 🧰 Tech Stack
 
-- **n8n** – Workflow automation (webhooks, Google Sheets, Gmail SMTP)
-- **Express.js** – Backend proxy to forward form data to n8n
-- **HTML/CSS/JS** – Simple, clean frontend form
-- **Google Sheets** – Stores all leads
-- **Gmail SMTP** – Sends email alerts
+| Component | Technology | Hosting |
+| :--- | :--- | :--- |
+| **Frontend** | HTML, CSS, JavaScript | Vercel (Static) |
+| **Backend API** | Node.js (Express) + Serverless Functions | Vercel |
+| **Workflow Automation** | n8n (Open-source) | Self-hosted (Local PC + Cloudflare Tunnel) |
+| **Database** | PostgreSQL (n8n data) | Supabase (Free Tier) |
+| **Data Storage** | Google Sheets | Google Workspace |
+| **Email Notifications** | Gmail SMTP | Google Workspace |
+| **Tunneling** | Cloudflare Tunnel | Free (no credit card required) |
+
+---
 
 ## 📁 Project Structure
 
 ```
 lead-generation-system/
-├── backend/
-│   └── server.js          # Express server (proxy to n8n)
-├── src/                   # Frontend source code
-│   ├── index.html         # Form structure
-│   ├── style.css          # Form styles
-│   └── script.js          # Form logic
-├── package.json           # Node.js dependencies
-└── README.md              # This file
+│
+├── api/
+│   └── submit-lead.js          # Vercel serverless function (backup endpoint)
+│
+├── src/                        # Frontend source code
+│   ├── index.html              # Lead capture form
+│   ├── style.css               # Form styling
+│   ├── script.js               # Form logic (sends to Vercel backend)
+│   └── logo.png                # Your personal brand logo
+│
+├── render.yaml                 # Render Blueprint (optional n8n deployment)
+├── vercel.json                 # Vercel deployment configuration
+├── package.json                # Node.js dependencies
+├── .env                        # Environment variables (secrets - NOT committed)
+├── .gitignore                  # Git ignore rules
+└── README.md                   # This file
 ```
 
-## 🚀 Setup Instructions
+---
 
-### 1. Clone & Install Dependencies
+## 🚀 Architecture Diagram
+
+```mermaid
+flowchart LR
+    User[User Browser] -->|Visits| Vercel[Vercel Hosting]
+    Vercel -->|Serves| FE[Frontend<br>HTML/CSS/JS (src/)]
+    FE -->|Form POST| API[API Endpoint<br>/api/submit-lead]
+    API -->|Forwards Data| CF[Cloudflare Tunnel]
+    CF -->|HTTP| n8n[n8n (Local PC)<br>Workflow Engine]
+    n8n -->|Appends Row| GS[Google Sheets]
+    n8n -->|Sends Email| Email[Gmail SMTP]
+```
+
+---
+
+## ✅ How It Works
+
+1. **User Submission**: A visitor fills out the lead form on your Vercel-hosted frontend.
+2. **Frontend Logic**: `src/script.js` sends a `POST` request to `/api/submit-lead` (Vercel serverless function).
+3. **Backend Processing**: The Vercel function receives the data, validates it, and forwards it to your n8n webhook URL (via Cloudflare Tunnel).
+4. **Workflow Execution**: n8n receives the data and triggers the workflow:
+   - **Google Sheets Node**: Appends a new row with the lead's details.
+   - **Email Node**: Sends a notification to your inbox via Gmail SMTP.
+5. **Response**: The Vercel function returns a success (or error) response to the frontend.
+
+---
+
+## 🔧 Setup Instructions
+
+### 1. Clone the Repository
 
 ```bash
 git clone <your-repo-url>
 cd lead-generation-system
-npm install
 ```
 
-### 2. Set Up n8n
+### 2. Set Up n8n (Local)
 
-- Install n8n globally: `npm install n8n -g`
-- Run n8n: `n8n`
-- Import the workflow JSON (provided in the `n8n/` folder) or build the workflow manually:
-  - **Webhook** (POST, path: `/submit-lead`)
-  - **Google Sheets** (Append Row)
-  - **Send Email** (Gmail SMTP)
-- Activate the workflow (click "Active" in the top-right corner).
-
-### 3. Configure Environment Variables (Optional)
-
-If you have secrets (like Google Service Account keys), add them to a `.env` file in the root.
-
-### 4. Run the Backend
-
+**Install n8n globally:**
 ```bash
-npm start
+npm install n8n -g
 ```
 
-The server will start on `http://localhost:5000`.
+**Start n8n locally:**
+```bash
+n8n start
+```
 
-### 5. Open the Form
+n8n will be available at `http://localhost:5678`.
 
-Open your browser and go to `http://localhost:5000`. Fill out the form and submit!
+**Build the workflow:**
+1. Open n8n at `http://localhost:5678`.
+2. Create a new workflow.
+3. Add a **Webhook** node:
+   - Method: `POST`
+   - Path: `/submit-lead`
+4. Add a **Google Sheets** node:
+   - Operation: `Append Row`
+   - Connect to your Google account
+   - Map the columns: `name`, `email`, `company`, `message`
+5. Add a **Send Email** node:
+   - SMTP Host: `smtp.gmail.com`
+   - Port: `587`
+   - Username: Your Gmail address
+   - Password: Your **App Password** (not your regular password)
+   - To: Your email address (receive notifications)
+   - Subject: `"New Lead Alert!"`
+   - Message: Include `{{ $json.body.name }}`, `{{ $json.body.email }}`, etc.
+6. Connect the nodes: **Webhook → Google Sheets → Email**.
+7. **Activate** the workflow (toggle to green).
 
-## ✅ How It Works
+---
 
-1. User fills out the form in `src/index.html`.
-2. `src/script.js` sends a `POST` request to `http://localhost:5000/submit-lead`.
-3. The Express backend forwards the data to n8n (`http://localhost:5678/webhook/submit-lead`).
-4. n8n appends the row to Google Sheets and sends an email alert.
+### 3. Expose n8n to the Internet (Cloudflare Tunnel)
+
+**Install Cloudflare Tunnel:**
+- Download from: https://github.com/cloudflare/cloudflared/releases
+- Or use: `winget install Cloudflare.cloudflared`
+
+**Run the tunnel:**
+```bash
+cloudflared tunnel --url http://localhost:5678
+```
+
+You'll get a URL like:
+```
+https://random-word-1234.trycloudflare.com
+```
+
+**Update n8n with the public URL:**
+```bash
+# Stop n8n (Ctrl+C)
+$env:N8N_PROTOCOL="https"
+$env:N8N_HOST="random-word-1234.trycloudflare.com"
+n8n start --webhook-url=https://random-word-1234.trycloudflare.com/
+```
+
+**Get your production webhook URL:**
+- In n8n, click on the Webhook node.
+- Copy the **Production URL** (e.g., `https://random-word-1234.trycloudflare.com/webhook/submit-lead`).
+
+---
+
+### 4. Deploy to Vercel
+
+**Push your code to GitHub:**
+```bash
+git add .
+git commit -m "Initial commit"
+git push
+```
+
+**Import to Vercel:**
+1. Go to [Vercel Dashboard](https://vercel.com).
+2. Click **"Add New..."** → **"Project"**.
+3. Import your GitHub repository.
+4. **Add Environment Variables:**
+   - **Name:** `N8N_WEBHOOK_URL`
+   - **Value:** (Paste your n8n Production URL from Step 3)
+5. Click **"Deploy"**.
+
+**Frontend URL:** Your Vercel deployment URL (e.g., `https://your-project.vercel.app`).
+
+---
+
+### 5. Configure Supabase (n8n Database)
+
+If you want to persist n8n data (workflows, credentials, executions) in the cloud:
+
+1. Sign up at [Supabase.com](https://supabase.com) (Free tier).
+2. Create a new project.
+3. Get your **Session Pooler** connection string from **Project Settings → Database**.
+4. Update your **Cloudflare Tunnel** or **Render** deployment with these environment variables:
+   - `DB_TYPE=postgresdb`
+   - `DB_POSTGRESDB_HOST=aws-0-[region].pooler.supabase.com`
+   - `DB_POSTGRESDB_PORT=5432`
+   - `DB_POSTGRESDB_DATABASE=postgres`
+   - `DB_POSTGRESDB_USER=postgres.[project-ref]`
+   - `DB_POSTGRESDB_PASSWORD=your-supabase-password`
+   - `DB_POSTGRESDB_SSL_ENABLED=true`
+   - `DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED=false`
+
+---
+
+## 🌐 Deployment URLs
+
+| Service | URL |
+| :--- | :--- |
+| **Frontend** | `https://your-project.vercel.app` |
+| **Backend API** | `https://your-project.vercel.app/api/submit-lead` |
+| **n8n (Local)** | `http://localhost:5678` |
+| **n8n (Public)** | `https://random-word-1234.trycloudflare.com` |
+| **n8n Webhook** | `https://random-word-1234.trycloudflare.com/webhook/submit-lead` |
+
+---
 
 ## 🔧 Troubleshooting
 
 | Issue | Solution |
 | :--- | :--- |
-| `ECONNREFUSED` / Connection error | n8n is not running. Start it with `n8n` in a separate terminal. |
-| `404` error | The webhook path in n8n is not `/submit-lead`. Check your Webhook node settings. |
-| Google Sheet not updating | Make sure your Google Sheet headers (`name`, `email`, `company`, `message`) match the incoming data. |
-| Email not sending | Ensure you used an **App Password** for Gmail and turned on 2-Step Verification. |
+| **Webhook not receiving data** | 1. Check Cloudflare tunnel is running. 2. Ensure workflow is **Active** (green toggle). 3. Verify `N8N_WEBHOOK_URL` environment variable is set correctly in Vercel. |
+| **`422` JSON parsing error** | Use PowerShell's `Invoke-RestMethod` or a here-string with `curl.exe` to send JSON correctly. |
+| **Google Sheets not updating** | 1. Verify column headers match: `name`, `email`, `company`, `message`. 2. Re-authenticate Google Sheets credential in n8n. |
+| **Email not sending** | 1. Ensure you're using a **Gmail App Password** (not your regular password). 2. Check Gmail SMTP settings: `smtp.gmail.com:587`. |
+| **`JavaScript heap out of memory`** | Add `NODE_OPTIONS=--max-old-space-size=512` environment variable to your n8n service. |
+| **Cold start issues on free tier** | Use a keep-alive service like [cron-job.org](https://cron-job.org) to ping your webhook URL every 10 minutes. |
+
+---
+
+## 📝 Environment Variables Reference
+
+| Variable | Description | Where to Set |
+| :--- | :--- | :--- |
+| `N8N_WEBHOOK_URL` | n8n production webhook URL | Vercel (Environment Variables) |
+| `N8N_HOST` | Public hostname for n8n | n8n (Environment) |
+| `N8N_PROTOCOL` | `https` or `http` | n8n (Environment) |
+| `N8N_PORT` | Port n8n listens on (default: `5678`) | n8n (Environment) |
+| `N8N_ENCRYPTION_KEY` | Encrypts n8n credentials | n8n (Environment) |
+| `DB_*` | Supabase PostgreSQL credentials | n8n (Environment) |
+
+---
+
+## 🧪 Testing the Webhook Directly
+
+**PowerShell:**
+```powershell
+Invoke-RestMethod -Uri "https://your-cloudflare-url/webhook/submit-lead" -Method POST -Body '{"name":"Test","email":"test@test.com"}' -ContentType "application/json"
+```
+
+**curl.exe (Windows):**
+```powershell
+curl.exe -X POST "https://your-cloudflare-url/webhook/submit-lead" -H "Content-Type: application/json" -d @"
+{"name":"CurlTest","email":"curl@test.com"}
+"@
+```
+
+---
 
 ## 📜 License
 
 MIT
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 🙏 Acknowledgments
+
+- [n8n.io](https://n8n.io) for the amazing workflow automation tool.
+- [Vercel](https://vercel.com) for free hosting and serverless functions.
+- [Cloudflare](https://cloudflare.com) for free tunneling.
+- [Supabase](https://supabase.com) for free PostgreSQL hosting.
+- [Google Workspace](https://workspace.google.com) for Sheets and Gmail.
+
+---
+
+## 📧 Contact
+
+**Author:** Raymond Owusu Apenteng
+
+---
+
+**Built with ❤️ and a lot of automation!** 🚀
