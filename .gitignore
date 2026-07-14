@@ -53,6 +53,8 @@ build/
 # If you want to COMMIT your n8n workflow JSON, REMOVE the line below.
 # Otherwise, it will ignore any .json files inside an 'n8n' folder.
 # n8n/*.json
+n8n.json
+package-lock.json
 
 # ============================================
 #  OS / MISCELLANEOUS
