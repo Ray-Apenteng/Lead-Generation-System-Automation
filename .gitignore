@@ -55,6 +55,8 @@ build/
 # n8n/*.json
 n8n.json
 package-lock.json
+n8n-workflow.json
+
 
 # ============================================
 #  OS / MISCELLANEOUS
